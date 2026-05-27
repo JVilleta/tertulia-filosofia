@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Tertulia · Grupo 2</title>
+<style>
+  :root {
+    --bg-1: #0f0c29;
+    --bg-2: #302b63;
+    --bg-3: #24243e;
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-bg-hover: rgba(255, 255, 255, 0.16);
+    --card-border: rgba(255, 255, 255, 0.18);
+    --text: #f5f5ff;
+    --text-muted: #c9c9e3;
+    --accent: #ffd166;
+    --accent-2: #06d6a0;
+    --accent-3: #ef476f;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --radius: 18px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { height: 100%; }
+
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text);
+    background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+    background-size: 400% 400%;
+    animation: gradientShift 18s ease infinite;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.5;
+  }
+
+  @keyframes gradientShift {
+    0%   { background-position: 0% 50%; }
+    50%  { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+  }
+
+  header.page-header {
+    text-align: center;
+    margin-bottom: 36px;
+    animation: fadeInDown 0.7s ease both;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(255, 209, 102, 0.15);
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    border: 1px solid rgba(255, 209, 102, 0.35);
+  }
+
+  h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #fff, var(--accent));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .subtitle {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+    max-width: 640px;
+    margin-inline: auto;
+  }
+
+  .search-wrapper {
+    position: sticky;
+    top: 12px;
+    z-index: 5;
+    margin: 0 auto 28px;
+    max-width: 560px;
+    animation: fadeInUp 0.7s ease both;
+  }
+
+  .search-box {
+    position: relative;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--card-border);
+    border-radius: 999px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+  }
+
+  .search-box:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(255, 209, 102, 0.2), var(--shadow);
+  }
+
+  .search-box svg {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+    pointer-events: none;
+  }
+
+  .search-box input {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 14px 50px 14px 50px;
+    border-radius: 999px;
+    font-family: inherit;
+  }
+
+  .search-box input::placeholder { color: var(--text-muted); }
+
+  .clear-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: 0;
+    color: var(--text);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    line-height: 1;
+    transition: var(--transition);
+  }
+
+  .clear-btn:hover { background: rgba(255, 255, 255, 0.2); }
+  .clear-btn.visible { display: flex; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  @media (min-width: 600px) {
+    .grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  }
+
+  @media (min-width: 900px) {
+    .grid { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  }
+
+  @media (min-width: 1180px) {
+    .grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .card {
+    position: relative;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    color: var(--text);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
+    transition: transform var(--transition), background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    overflow: hidden;
+    isolation: isolate;
+    min-height: 110px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    animation: fadeInUp 0.5s ease both;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top left, rgba(255, 209, 102, 0.18), transparent 60%),
+                radial-gradient(circle at bottom right, rgba(6, 214, 160, 0.15), transparent 60%);
+    opacity: 0;
+    transition: opacity var(--transition);
+    z-index: -1;
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    background: var(--card-bg-hover);
+    border-color: rgba(255, 209, 102, 0.5);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .card .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-3));
+    color: #1a1a2e;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+
+  .card .name {
+    font-size: 0.95rem;
+    line-height: 1.35;
+    color: #fff;
+    width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    display: block;
+  }
+
+  .card .footer {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--text-muted);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .card .footer svg {
+    width: 18px;
+    height: 18px;
+    transition: transform var(--transition);
+  }
+
+  .card:hover .footer svg { transform: translateX(4px); }
+
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--text-muted);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state h3 { margin: 12px 0 4px; color: var(--text); }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 28, 0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--transition);
+    z-index: 50;
+  }
+
+  .modal-backdrop.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .modal {
+    background: linear-gradient(160deg, #1f1b4a, #2c2856);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 22px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+    max-width: 560px;
+    width: 100%;
+    padding: 32px 28px 28px;
+    position: relative;
+    transform: scale(0.92) translateY(20px);
+    transition: transform var(--transition);
+  }
+
+  .modal-backdrop.open .modal { transform: scale(1) translateY(0); }
+
+  .modal-close {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background var(--transition), transform var(--transition);
+  }
+
+  .modal-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+  }
+
+  .modal .avatar-large {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.35rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent-3));
+    color: #1a1a2e;
+    margin-bottom: 14px;
+  }
+
+  .modal h2 {
+    margin: 0 0 18px;
+    font-size: clamp(1.2rem, 3.5vw, 1.55rem);
+    font-weight: 800;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .modal .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+    margin: 0 0 18px;
+  }
+
+  .modal .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .modal .label::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .modal p.comment {
+    margin: 0;
+    color: var(--text);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    background: rgba(255, 255, 255, 0.05);
+    border-left: 3px solid var(--accent);
+    padding: 14px 16px;
+    border-radius: 10px;
+  }
+
+  footer.page-footer {
+    text-align: center;
+    margin-top: 50px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <span class="badge">Tertulia · Grupo 2</span>
+      <h1>Filosofía del siglo XX</h1>
+      <p class="subtitle">en Cuba, República Dominicana y Puerto Rico</p>
+    </header>
+
+    <div class="search-wrapper">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="search" type="text" placeholder="Buscar estudiante por nombre..." autocomplete="off" />
+        <button class="clear-btn" id="clearBtn" aria-label="Limpiar búsqueda">×</button>
+      </div>
+    </div>
+
+    <main id="grid" class="grid" aria-live="polite"></main>
+
+    <footer class="page-footer">
+      Toca cualquier tarjeta para ver el comentario del estudiante.
+    </footer>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="modalName">
+    <div class="modal">
+      <button class="modal-close" id="modalClose" aria-label="Cerrar">×</button>
+      <div class="avatar-large" id="modalAvatar"></div>
+      <h2 id="modalName"></h2>
+      <div class="divider"></div>
+      <div class="label">Comentario</div>
+      <p class="comment" id="modalComment"></p>
+    </div>
+  </div>
+
+<script>
+  const students = [
+    { name: "HENRY DANIEL GARCIA RAMOS", comment: "¿Creen que la filosofía todavía influye en la política actual?" },
+    { name: "ARMANDO ALVARADO CUEVAS", comment: "José Martí defendía la identidad latinoamericana. ¿Hoy seguimos defendiendo nuestra cultura?" },
+    { name: "ROSANNY BATISTA FAMILIA", comment: "La educación fue una de las herramientas más importantes para los filósofos del Caribe." },
+    { name: "JUSTYNE GREIDY BRYAN MONTERO", comment: "¿Puede existir progreso científico sin valores humanos?" },
+    { name: "JOSE ARQUIMEDES CONCEPCION MUÑOZ", comment: "El positivismo defendía la ciencia y el progreso como formas de mejorar la sociedad." },
+    { name: "NIURKYS ALTAGRACIA MALDONADO MENDEZ", comment: "¿Qué filósofo del Caribe te pareció más interesante y por qué?" },
+    { name: "ESTEFANY MARTE RIVERA", comment: "Muchos pensadores caribeños lucharon por la libertad y la identidad nacional." },
+    { name: "LEONARDO MERCEDES PINEDA", comment: "¿Creen que la filosofía ayuda a comprender mejor la realidad social?" },
+    { name: "CYNTHIA NOEMI PAULA VILLETA", comment: "La filosofía también busca mejorar la vida de las personas, no solo reflexionar." },
+    { name: "LIVINSTON STEVEN PEREZ ALEJO", comment: "En Cuba, la filosofía estuvo muy relacionada con la política y la revolución." },
+    { name: "YAHIRA DIVINA RECIO MEJIA", comment: "¿La educación sigue siendo una herramienta de cambio social?" },
+    { name: "LUIS GABRIEL REYES RUIZ", comment: "Puerto Rico defendió mucho su identidad cultural frente a influencias extranjeras." },
+    { name: "DANIEL IGNACIO RODRIGUEZ BOCIO", comment: "¿Cuál fue el aporte más importante de la filosofía dominicana?" },
+    { name: "OSAMEL DE JESUS RODRIGUEZ BUENO", comment: "Pedro Henríquez Ureña promovía una América Latina más unida culturalmente." },
+    { name: "CYNTHIA NICOLE RODRIGUEZ CRISOSTOMO", comment: "¿La filosofía debería enseñarse más en las escuelas y universidades?" },
+    { name: "ALDO RAFAEL ROMERO LARA", comment: "La filosofía caribeña buscó defender el humanismo y la dignidad humana." },
+    { name: "PEDRO ANTONIO RUIZ PIÑEYRO", comment: "¿Qué país tuvo mayor influencia del positivismo: Cuba, Puerto Rico o República Dominicana?" },
+    { name: "JOSEFINA SANTIAGO APOLINAR", comment: "Muchos filósofos también participaron en política y educación." },
+    { name: "ANA TANICHA TEJEDA ALVAREZ", comment: "¿Creen que las ideas filosóficas todavía cambian sociedades?" },
+    { name: "ERI MICHELL TENA SANCHEZ", comment: "La filosofía del Caribe ayudó a fortalecer la identidad latinoamericana." }
+  ];
+
+  const grid = document.getElementById('grid');
+  const search = document.getElementById('search');
+  const clearBtn = document.getElementById('clearBtn');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalClose = document.getElementById('modalClose');
+  const modalName = document.getElementById('modalName');
+  const modalComment = document.getElementById('modalComment');
+  const modalAvatar = document.getElementById('modalAvatar');
+
+  function getInitials(name) {
+    const parts = name.trim().split(/\s+/);
+    const first = parts[0]?.[0] || '';
+    const second = parts[1]?.[0] || parts[0]?.[1] || '';
+    return (first + second).toUpperCase();
+  }
+
+  function normalize(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  }
+
+  function render(list) {
+    grid.innerHTML = '';
+    if (list.length === 0) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.6">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <h3>Sin resultados</h3>
+          <p>No se encontró ningún estudiante con ese nombre.</p>
+        </div>`;
+      return;
+    }
+    list.forEach((s, i) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'card';
+      btn.style.animationDelay = `${i * 0.04}s`;
+      btn.innerHTML = `
+        <div class="avatar">${getInitials(s.name)}</div>
+        <div class="name">${s.name}</div>
+        <div class="footer">
+          <span>Ver comentario</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>`;
+      btn.addEventListener('click', () => openModal(s));
+      grid.appendChild(btn);
+    });
+  }
+
+  function openModal(student) {
+    modalName.textContent = student.name;
+    modalComment.textContent = student.comment;
+    modalAvatar.textContent = getInitials(student.name);
+    modalBackdrop.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modalBackdrop.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  modalClose.addEventListener('click', closeModal);
+  modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  search.addEventListener('input', () => {
+    const q = normalize(search.value.trim());
+    clearBtn.classList.toggle('visible', q.length > 0);
+    if (!q) {
+      render(students);
+      return;
+    }
+    const filtered = students.filter(s => normalize(s.name).includes(q));
+    render(filtered);
+  });
+
+  clearBtn.addEventListener('click', () => {
+    search.value = '';
+    clearBtn.classList.remove('visible');
+    render(students);
+    search.focus();
+  });
+
+  render(students);
+</script>
+</body>
+</html>
